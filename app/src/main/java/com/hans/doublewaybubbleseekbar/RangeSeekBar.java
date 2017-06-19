@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -133,7 +134,6 @@ public class RangeSeekBar extends View {
             mRange = a.getInt(R.styleable.RangeSeekBar_rsb_range, 100);
             a.recycle();
         }
-        mPointerDrawable = getResources().getDrawable(R.drawable.left_cursor_bg);
 
         mNormalPaint = new Paint();
         mNormalPaint.setColor(backgroundColor);
@@ -197,7 +197,13 @@ public class RangeSeekBar extends View {
 
 
         //draw  seek bar bg
-        canvas.drawRoundRect(mSbLeft, mSbTop, mSbRight, mSbBottom, mSbRound, mSbRound, mNormalPaint);
+        RectF rectF = new RectF();
+        rectF.left = mSbLeft;
+        rectF.right = mSbRight;
+        rectF.top = mSbTop;
+        rectF.bottom = mSbBottom;
+        //draw  bg
+        canvas.drawRoundRect(rectF, mSbRound, mSbRound, mNormalPaint);
 
         if (mIsRangeEnable) {
             //draw progress

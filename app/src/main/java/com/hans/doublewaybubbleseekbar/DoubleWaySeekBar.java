@@ -7,6 +7,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -118,7 +119,12 @@ public class DoubleWaySeekBar extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //draw  bg
-        canvas.drawRoundRect(mNormalBgStartX, mBgTop, mNormalBgEndX, mBgBottom, mRoundSize, mRoundSize, mNormalPaint);
+        RectF rectF = new RectF();
+        rectF.left = mNormalBgStartX;
+        rectF.right = mNormalBgEndX;
+        rectF.top = mBgTop;
+        rectF.bottom = mBgBottom;
+        canvas.drawRoundRect(rectF, mRoundSize, mRoundSize, mNormalPaint);
 
         //draw progress
         // draw left
