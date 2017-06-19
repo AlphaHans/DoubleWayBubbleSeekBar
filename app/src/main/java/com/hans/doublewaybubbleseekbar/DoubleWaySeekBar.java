@@ -10,7 +10,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -46,16 +45,15 @@ public class DoubleWaySeekBar extends View {
     private float mPointerTop;
     private float mPointerBottom;
 
-    private float mCurrentLeftOffset = 0;
     //是否处于点击状态
     private boolean mIsOnDrag;
+    private float mCurrentLeftOffset = 0;
 //    private int mTouchSlop;
 
     private float mLastX;
 
     private Drawable mPointerDrawable;
     private int mHalfDrawableWidth;
-    private int mRange;
 
     public DoubleWaySeekBar(Context context) {
         super(context);
@@ -73,17 +71,16 @@ public class DoubleWaySeekBar extends View {
     }
 
     private void init(AttributeSet attrs) {
-        int progressColor = Color.YELLOW;
-        int backgroundColor = Color.GRAY;
+        int progressColor = Color.parseColor("#FF4081");
+        int backgroundColor = Color.parseColor("#BBBBBB");
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.DoubleWaySeekBar);
             mPointerDrawable = a.getDrawable(R.styleable.DoubleWaySeekBar_pointerBackground);
             mHalfDrawableWidth = mPointerDrawable.getIntrinsicWidth() / 2;
             progressColor = a.getColor(R.styleable.DoubleWaySeekBar_progressColor,
-                    Color.BLACK);
+                    Color.parseColor("#FF4081"));
             backgroundColor = a.getColor(R.styleable.DoubleWaySeekBar_backgroundColor,
-                    Color.BLACK);
-            mRange = a.getInteger(R.styleable.DoubleWaySeekBar_range, 100);
+                    Color.parseColor("#BBBBBB"));
             a.recycle();
         }
         mNormalPaint = new Paint();
@@ -115,7 +112,6 @@ public class DoubleWaySeekBar extends View {
         mLastX = mPointerLeft;
         calculatePointerRect();
 
-        Log.i(TAG, "onSizeChanged: width = " + mWidth + " height =  " + mHeight);
     }
 
     @Override
@@ -204,26 +200,25 @@ public class DoubleWaySeekBar extends View {
 
     private void callbackProgress() {
         if (mPointerLeft == 0) {
-            callbackProgressInternal(-mRange);
+            callbackProgressInternal(-1);
         } else if (mPointerRight == mWidth) {
-            callbackProgressInternal(mRange);
+            callbackProgressInternal(1);
         } else {
             float pointerMiddle = mPointerLeft + mHalfDrawableWidth;
             if (pointerMiddle == mViewMiddleXPos) {
                 callbackProgressInternal(0);
             } else {
-                double percent = Math.abs(mViewMiddleXPos - pointerMiddle) / mViewMiddleXPos * 1.0;
+                float percent = Math.abs(mViewMiddleXPos - pointerMiddle) / mViewMiddleXPos * 1.0f;
                 if (mPointerLeft < mViewMiddleXPos) {
-                    callbackProgressInternal((int) (-percent * mRange));
+                    callbackProgressInternal(-percent);
                 } else {
-                    callbackProgressInternal((int) (percent * mRange));
+                    callbackProgressInternal(percent);
                 }
             }
         }
     }
 
-    private void callbackProgressInternal(int progress) {
-        Log.i(TAG, "callbackProgressInternal: " + progress);
+    private void callbackProgressInternal(float progress) {
         if (mListener != null) {
             mListener.onSeekProgress(progress);
         }
@@ -233,10 +228,11 @@ public class DoubleWaySeekBar extends View {
     private boolean handleDownEvent(MotionEvent event) {
         float x = event.getX();
         float y = event.getY();
-        if (x >= mPointerLeft && x <= mPointerRight && y >= mPointerTop && y <= mPointerBottom) {
+        if (x >= mPointerLeft - 30 && x <= mPointerRight + 30 && y >= mPointerTop && y <= mPointerBottom) {
             if (mListener != null)
                 mListener.onSeekDown();
             mIsOnDrag = true;
+            mLastX = x;
             return true;
         }
         return false;
@@ -256,7 +252,7 @@ public class DoubleWaySeekBar extends View {
      * 进行复位
      */
     public void resetSeekBar() {
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(mPointerLeft, mViewMiddleXPos);
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(mPointerLeft, mViewMiddleXPos - mHalfDrawableWidth);
         valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
         valueAnimator.setDuration(200);
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {

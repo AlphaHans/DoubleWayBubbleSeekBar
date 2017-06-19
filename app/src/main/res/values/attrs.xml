@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DoubleWaySeekBar">
+        <attr name="pointerBackground" format="reference" />
+        <attr name="backgroundColor" format="color" />
+        <attr name="progressColor" format="color" />
+    </declare-styleable>
+
+
+    <declare-styleable name="RangeSeekBar">
+        <attr name="rsb_pointerBackground" format="reference" />
+        <attr name="rsb_backgroundColor" format="color" />
+        <attr name="rsb_progressColor" format="color" />
+        <attr name="rsb_range" format="integer" />
+    </declare-styleable>
+</resources>

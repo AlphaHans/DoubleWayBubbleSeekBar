@@ -8,10 +8,5 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <declare-styleable name="DoubleWaySeekBar">
-        <attr name="pointerBackground" format="reference" />
-        <attr name="backgroundColor" format="color" />
-        <attr name="progressColor" format="color" />
-        <attr name="range" format="integer" />
-    </declare-styleable>
+
 </resources>

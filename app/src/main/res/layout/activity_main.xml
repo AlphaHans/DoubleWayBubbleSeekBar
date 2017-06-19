@@ -15,8 +15,7 @@
         android:layout_marginTop="200dp"
         app:backgroundColor="#BBBBBB"
         app:pointerBackground="@drawable/left_cursor_bg"
-        app:progressColor="@color/colorAccent"
-        app:range="100" />
+        app:progressColor="@color/colorAccent" />
 
     <Button
         android:id="@+id/main_btn_reset"
@@ -24,4 +23,25 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="对SeekBar进行复位" />
+
+
+    <com.hans.doublewaybubbleseekbar.RangeSeekBar
+        android:id="@+id/main_range_sb"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="30dp"
+        app:rsb_backgroundColor="#BBBBBB"
+        app:rsb_pointerBackground="@drawable/left_cursor_bg"
+        app:rsb_progressColor="@color/colorAccent"
+        app:rsb_range="400" />
+
+
+    <Button
+        android:id="@+id/main_btn_is_show"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="开/关Range显示" />
 </LinearLayout>
