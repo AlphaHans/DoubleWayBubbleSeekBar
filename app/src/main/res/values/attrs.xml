@@ -11,6 +11,6 @@
         <attr name="rsb_pointerBackground" format="reference" />
         <attr name="rsb_backgroundColor" format="color" />
         <attr name="rsb_progressColor" format="color" />
-        <attr name="rsb_range" format="integer" />
+        <attr name="rsb_maxRange" format="integer" />
     </declare-styleable>
 </resources>

@@ -33,9 +33,9 @@
         android:layout_marginRight="50dp"
         android:layout_marginTop="30dp"
         app:rsb_backgroundColor="#BBBBBB"
+        app:rsb_maxRange="400"
         app:rsb_pointerBackground="@drawable/left_cursor_bg"
-        app:rsb_progressColor="@color/colorAccent"
-        app:rsb_range="400" />
+        app:rsb_progressColor="@color/colorAccent" />
 
 
     <Button
@@ -44,4 +44,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:text="开/关Range显示" />
+
+    <Button
+        android:id="@+id/main_btn_set_range"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="设置Range区间" />
 </LinearLayout>

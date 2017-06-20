@@ -48,15 +48,13 @@ public class RangeSeekBar extends View {
     private boolean mIsDragRight;
     private boolean mLastIsDragLeft;
 
-    private int mRange;
+    private int mMaxRange;
     private OnRangeProgressListener mListener;
 
     private boolean mIsRangeEnable;
 
-    public RangeSeekBar(Context context) {
-        super(context);
-        init(null);
-    }
+    private int mLpProgress;
+    private int mRpProgress;
 
 
     public RangeSeekBar(Context context, @Nullable AttributeSet attrs) {
@@ -115,26 +113,45 @@ public class RangeSeekBar extends View {
      *
      * @param range
      */
-    public void setRange(int range) {
-        mRange = range;
+    public void setMaxRange(int range) {
+        if (mRpProgress == mMaxRange) {
+            mRpProgress = range - 1;
+        }
+        mMaxRange = range - 1;
+    }
+
+
+    public void setRangeProgress(int lpProgress, int rpProgress) {
+        if (lpProgress > rpProgress || rpProgress >= mMaxRange) {
+            throw new IllegalStateException("非法!");
+        }
+        mLpProgress = lpProgress;
+        mRpProgress = rpProgress;
+        calculateLPPos(lpProgress);
+        calculateRPPos(rpProgress);
+        invalidate();
+    }
+
+    public int getLpProgress() {
+        return mLpProgress;
+    }
+
+    public int getRpProgress() {
+        return mRpProgress;
     }
 
     private void init(AttributeSet attrs) {
         mIsRangeEnable = true;
-        int progressColor = Color.parseColor("#FF4081");
-        int backgroundColor = Color.parseColor("#BBBBBB");
-        mRange = 100;
-        if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar);
-            mPointerDrawable = a.getDrawable(R.styleable.RangeSeekBar_rsb_pointerBackground);
-            progressColor = a.getColor(R.styleable.RangeSeekBar_rsb_progressColor,
-                    Color.parseColor("#FF4081"));
-            backgroundColor = a.getColor(R.styleable.RangeSeekBar_rsb_backgroundColor,
-                    Color.parseColor("#BBBBBB"));
-            mRange = a.getInt(R.styleable.RangeSeekBar_rsb_range, 100);
-            a.recycle();
-        }
-
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.RangeSeekBar);
+        mPointerDrawable = a.getDrawable(R.styleable.RangeSeekBar_rsb_pointerBackground);
+        int progressColor = a.getColor(R.styleable.RangeSeekBar_rsb_progressColor,
+                Color.parseColor("#FF4081"));
+        int backgroundColor = a.getColor(R.styleable.RangeSeekBar_rsb_backgroundColor,
+                Color.parseColor("#BBBBBB"));
+        mMaxRange = a.getInt(R.styleable.RangeSeekBar_rsb_maxRange, 100) - 1;
+        a.recycle();
+        mRpProgress = mMaxRange;
+        mLpProgress = 0;
         mNormalPaint = new Paint();
         mNormalPaint.setColor(backgroundColor);
 
@@ -213,6 +230,7 @@ public class RangeSeekBar extends View {
                     mRPRight - mPointerDrawable.getIntrinsicWidth() / 2,
                     mSbBottom,
                     mProgressPaint);
+
             //draw left pointer
             Rect leftRect = new Rect();
             leftRect.left = (int) mLPLeft;
@@ -312,10 +330,10 @@ public class RangeSeekBar extends View {
     }
 
     private void callbackListener() {
-        int lpProgress = calculateLPProgress();
-        int rpProgress = calculateRPProgress();
+        mLpProgress = calculateLPProgress();
+        mRpProgress = calculateRPProgress();
         if (mListener != null) {
-            mListener.onSeekProgress(lpProgress, rpProgress);
+            mListener.onSeekProgress(mLpProgress, mRpProgress);
         }
     }
 
@@ -332,16 +350,6 @@ public class RangeSeekBar extends View {
             mRPLastX = x;
         }
 
-//        if (mLPLeft + mPointerDrawable.getIntrinsicWidth() == mViewWidth) {
-//            mLastIsDragLeft = true;
-//            mIsDragLeft = true;
-//            mIsDragRight = false;
-//        }
-//        if (mRPRight - mPointerDrawable.getIntrinsicWidth() == 0) {
-//            mLastIsDragLeft = false;
-//            mIsDragLeft = false;
-//            mIsDragRight = true;
-//        }
         if (mIsDragLeft && mIsDragRight) {
             if (mLastIsDragLeft) {
                 mIsDragLeft = true;
@@ -372,20 +380,47 @@ public class RangeSeekBar extends View {
         } else {
             float leftDis = lpCenter - mSbLeft;
             float percent = leftDis / mSeekBarWidth;
-            return (int) (percent * mRange);
+            if (percent <= 0.005) percent = 0;
+            return (int) (percent * mMaxRange);
         }
+    }
+
+    private void calculateLPPos(int lpProgress) {
+        if (lpProgress == 0) {
+            mLPLeft = mSbLeft - mPointerDrawable.getIntrinsicWidth() / 2;
+        } else {
+            float percent = lpProgress * 1.0f / mMaxRange;
+            float leftDis = percent * mSeekBarWidth;
+            float lpCenter = leftDis + mSbLeft;
+            mLPLeft = lpCenter - mPointerDrawable.getIntrinsicWidth() / 2;
+        }
+        mLPOffset = 0;
+        calculateLPRect();
     }
 
     private int calculateRPProgress() {
         float rpCenter = mRPRight - mPointerDrawable.getIntrinsicWidth() / 2;
         if (rpCenter == mSbRight) {
-            return 1 * mRange;
+            return 1 * mMaxRange;
         } else {
             float rightDis = mSbRight - rpCenter;
             float percent = rightDis / mSeekBarWidth;
             if (percent <= 0.005) percent = 0;
-            return (int) ((1 - percent) * mRange);
+            return (int) ((1 - percent) * mMaxRange);
         }
+    }
+
+    private void calculateRPPos(int rpProgress) {
+        if (rpProgress == mMaxRange) {
+            mRPRight = mSbRight + mPointerDrawable.getIntrinsicWidth() / 2;
+        } else {
+            float percent = 1 - rpProgress * 1.0f / mMaxRange;
+            float rightDis = percent * mSeekBarWidth;
+            float rpCenter = mSbRight - rightDis;
+            mRPRight = rpCenter + mPointerDrawable.getIntrinsicWidth() / 2;
+        }
+        mRPOffset = 0;
+        calculateRPRect();
     }
 
 

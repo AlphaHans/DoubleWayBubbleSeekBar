@@ -25,16 +25,15 @@ public class DoubleWaySeekBar extends View {
     private int mWidth;
     private int mHeight;
 
-    private int mNormalBgStartX;
-    private int mNormalBgEndX;
+    private int mSeekBarLeft;
+    private int mSeekBarRight;
 
     private int mBgTop;
     private int mBgBottom;
     private int mRoundSize;
 
-    //终点位置
+    //中点位置
     private int mViewMiddleXPos;
-
 
     private Paint mNormalPaint;
     private Paint mPointerPaint;
@@ -49,7 +48,6 @@ public class DoubleWaySeekBar extends View {
     //是否处于点击状态
     private boolean mIsOnDrag;
     private float mCurrentLeftOffset = 0;
-//    private int mTouchSlop;
 
     private float mLastX;
 
@@ -100,8 +98,8 @@ public class DoubleWaySeekBar extends View {
         mWidth = w;
         mHeight = h;
 
-        mNormalBgStartX = mHalfDrawableWidth;
-        mNormalBgEndX = mWidth - mHalfDrawableWidth;
+        mSeekBarLeft = mHalfDrawableWidth;
+        mSeekBarRight = mWidth - mHalfDrawableWidth;
 
         mBgTop = 10;
         mBgBottom = mHeight - 10;
@@ -120,8 +118,8 @@ public class DoubleWaySeekBar extends View {
         super.onDraw(canvas);
         //draw  bg
         RectF rectF = new RectF();
-        rectF.left = mNormalBgStartX;
-        rectF.right = mNormalBgEndX;
+        rectF.left = mSeekBarLeft;
+        rectF.right = mSeekBarRight;
         rectF.top = mBgTop;
         rectF.bottom = mBgBottom;
         canvas.drawRoundRect(rectF, mRoundSize, mRoundSize, mNormalPaint);
@@ -188,11 +186,11 @@ public class DoubleWaySeekBar extends View {
             mCurrentLeftOffset = x - mLastX;
             //计算出标尺的Rect
             calculatePointerRect();
-            if (mPointerRight - mHalfDrawableWidth <= mNormalBgStartX) {
+            if (mPointerRight - mHalfDrawableWidth <= mSeekBarLeft) {
                 mPointerLeft = 0;
                 mPointerRight = mPointerLeft + mPointerDrawable.getIntrinsicWidth();
             }
-            if (mPointerLeft + mHalfDrawableWidth >= mNormalBgEndX) {
+            if (mPointerLeft + mHalfDrawableWidth >= mSeekBarRight) {
                 mPointerRight = mWidth;
                 mPointerLeft = mWidth - mPointerDrawable.getIntrinsicWidth();
             }

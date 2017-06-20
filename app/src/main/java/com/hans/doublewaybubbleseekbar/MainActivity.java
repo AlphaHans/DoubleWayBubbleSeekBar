@@ -68,6 +68,12 @@ public class MainActivity extends Activity {
                 mBtnOpenRange.setSelected(!mBtnOpenRange.isSelected());
             }
         });
+        findViewById(R.id.main_btn_set_range).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRsb.setRangeProgress(100, 200);
+            }
+        });
     }
 
 
